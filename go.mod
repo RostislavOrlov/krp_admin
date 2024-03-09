@@ -1,13 +1,15 @@
-module krp_admin
+module github.com/RostislavOrlov/krp_admin
 
 go 1.21
 
 require (
 	github.com/gin-gonic/gin v1.9.1
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/jackc/pgx/v5 v5.5.4
 	github.com/sirupsen/logrus v1.9.3
-	github.com/golang-jwt/jwt v3.2.2+incompatible
 )
+
+require github.com/avast/retry-go v3.0.0+incompatible // indirect
 
 require (
 	github.com/bytedance/sonic v1.11.2 // indirect

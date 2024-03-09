@@ -1,8 +1,10 @@
 package services
 
 import (
-	"krp_admin/internal/dto"
-	"krp_admin/internal/repositories"
+	"errors"
+	"github.com/RostislavOrlov/krp_admin/internal/dto"
+	"github.com/RostislavOrlov/krp_admin/internal/repositories"
+	"github.com/RostislavOrlov/krp_admin/internal/utils"
 )
 
 type UserService struct {
@@ -15,11 +17,22 @@ func NewUserService(repo *repositories.UserRepository) (*UserService, error) {
 	}, nil
 }
 
+func (srv *UserService) AddUser(req dto.AddUserRequest) (*dto.AddUserResponse, error) {
+	password := utils.GeneratePassword(req)
+	req.Password = password
+	usr, err := srv.repo.AddUser(req)
+	if err != nil {
+		return nil, errors.New("failed user registration")
+	}
+
+	return usr, nil
+}
+
 func (srv *UserService) EditUser(req dto.EditUserRequest) (*dto.EditUserResponse, error) {
 	return srv.repo.EditUser(req)
 }
 
-func (srv *UserService) DeleteUser(req dto.DeleteUserRequest) (*dto.DeleteUserRequest, error) {
+func (srv *UserService) DeleteUser(req dto.DeleteUserRequest) (*dto.DeleteUserResponse, error) {
 	return srv.repo.DeleteUser(req)
 }
 

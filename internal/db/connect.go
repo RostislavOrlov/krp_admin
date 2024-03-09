@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"github.com/avast/retry-go"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 

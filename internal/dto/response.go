@@ -1,6 +1,6 @@
 package dto
 
-import "krp_admin/internal/entities"
+import "github.com/RostislavOrlov/krp_admin/internal/entities"
 
 type AddUserResponse struct {
 	EmployeeId int    `json:"employee_id"`

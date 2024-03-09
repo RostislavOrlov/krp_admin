@@ -58,12 +58,12 @@ func CheckAccessTokenExpiresMiddleware() gin.HandlerFunc {
 
 		if claimsAccess, okAccess := accessTokenWithClaims.Claims.(*TokenClaims); okAccess && accessTokenWithClaims.Valid {
 			fmt.Printf("%v %v", claimsAccess.StandardClaims.ExpiresAt)
-			accessTokenClaims := jwt.StandardClaims{
-				ExpiresAt: time.Now().Add(24 * time.Hour).Unix(),
-				IssuedAt:  time.Now().Unix(),
-			}
+			//accessTokenClaims := jwt.StandardClaims{
+			//	ExpiresAt: time.Now().Add(24 * time.Hour).Unix(),
+			//	IssuedAt:  time.Now().Unix(),
+			//}
 
-			if accessTokenClaims.ExpiresAt < time.Now().Unix() {
+			if claimsAccess.ExpiresAt < time.Now().Unix() {
 				c.JSON(http.StatusUnauthorized, gin.H{"message": "access token expired"})
 				c.Abort()
 			}

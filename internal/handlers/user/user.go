@@ -1,15 +1,13 @@
 package user
 
 import (
-	"encoding/json"
+	"github.com/RostislavOrlov/krp_admin/internal/dto"
+	"github.com/RostislavOrlov/krp_admin/internal/handlers/request"
+	"github.com/RostislavOrlov/krp_admin/internal/middleware"
+	"github.com/RostislavOrlov/krp_admin/internal/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"io"
-	"krp_admin/internal/dto"
-	"krp_admin/internal/handlers/request"
-	"krp_admin/internal/middleware"
-	"krp_admin/internal/services"
 	"net/http"
 )
 
@@ -45,29 +43,60 @@ func NewUserHandler(srv *services.UserService, engine *gin.Engine) (*UserHandler
 	return h, nil
 }
 
+//func (h *UserHandler) AddUser(c *gin.Context) {
+//	req, ok := request.GetRequest[dto.AddUserRequest](c)
+//	logrus.Debug(req)
+//	if !ok {
+//		c.JSON(http.StatusBadRequest, gin.H{"error": "add user request error", "text": ok})
+//		return
+//	}
+//
+//	client := http.Client{}
+//
+//	reqRegAuthService, err := http.NewRequest("POST", "http://localhost:8080/register", nil)
+//	resp, err := client.Do(reqRegAuthService)
+//	defer resp.Body.Close()
+//
+//	body, err := io.ReadAll(resp.Body)
+//	var respBody dto.AddUserResponse
+//	err = json.Unmarshal(body, &respBody)
+//	if err != nil {
+//		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error", "text": err.Error()})
+//		return
+//	}
+//
+//	c.JSON(http.StatusCreated, gin.H{"data": respBody})
+//}
+
 func (h *UserHandler) AddUser(c *gin.Context) {
 	req, ok := request.GetRequest[dto.AddUserRequest](c)
 	logrus.Debug(req)
 	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "add user request error", "text": ok})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "add user (register) request error", "text": ok})
 		return
 	}
-
-	client := http.Client{}
-
-	reqRegAuthService, err := http.NewRequest("POST", "http://localhost:8080/register", nil)
-	resp, err := client.Do(reqRegAuthService)
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	var respBody dto.AddUserResponse
-	err = json.Unmarshal(body, &respBody)
+	usr, err := h.userService.AddUser(req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error", "text": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "add user (register) service error", "text": err.Error()})
 		return
 	}
+	logrus.Debug(usr)
 
-	c.JSON(http.StatusCreated, gin.H{"data": respBody})
+	resp := dto.AddUserResponse{
+		EmployeeId: usr.EmployeeId,
+		LastName:   usr.LastName,
+		FirstName:  usr.FirstName,
+		MiddleName: usr.MiddleName,
+		Email:      usr.Email,
+		Password:   usr.Password,
+		Passport:   usr.Passport,
+		Inn:        usr.Inn,
+		Snils:      usr.Snils,
+		Birthday:   usr.Birthday,
+		Role:       usr.Role,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "ok", "data": resp})
 }
 
 func (h *UserHandler) EditUser(c *gin.Context) {
@@ -83,7 +112,17 @@ func (h *UserHandler) EditUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error (edit user)", "text": err.Error()})
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": resp})
+	respFinal := dto.EditUserResponse{
+		EmployeeId: resp.EmployeeId,
+		LastName:   resp.LastName,
+		FirstName:  resp.FirstName,
+		MiddleName: resp.MiddleName,
+		Passport:   resp.Passport,
+		Inn:        resp.Inn,
+		Snils:      resp.Snils,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": respFinal})
 }
 
 func (h *UserHandler) DeleteUser(c *gin.Context) {
@@ -103,12 +142,6 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 }
 
 func (h *UserHandler) ListUsers(c *gin.Context) {
-	req, ok := request.GetRequest[dto.DeleteUserRequest](c)
-	logrus.Debug(req)
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "list users request error", "text": ok})
-		return
-	}
 	users, err := h.userService.ListUsers()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error (list users)", "text": err.Error()})

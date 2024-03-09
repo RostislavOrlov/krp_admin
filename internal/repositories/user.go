@@ -3,9 +3,9 @@ package repositories
 import (
 	"context"
 	"errors"
+	"github.com/RostislavOrlov/krp_admin/internal/dto"
+	"github.com/RostislavOrlov/krp_admin/internal/entities"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"krp_admin/internal/dto"
-	"krp_admin/internal/entities"
 	"log"
 )
 
@@ -19,8 +19,31 @@ func NewUserRepository(db *pgxpool.Pool) (*UserRepository, error) {
 	}, nil
 }
 
+func (repo *UserRepository) AddUser(req dto.AddUserRequest) (*dto.AddUserResponse, error) {
+	q := "INSERT INTO users (lastname, firstname, middlename, email, pswd, passport, inn, snils, birthday, role) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *"
+
+	row, err := repo.db.Query(context.Background(), q,
+		req.LastName, req.FirstName, req.MiddleName, req.Email, req.Password,
+		req.Passport, req.Inn, req.Snils, req.Birthday, req.Role)
+	if err != nil && err.Error() != "no row in result set" {
+		return nil, err
+	}
+
+	defer row.Close()
+	var usrDb dto.AddUserResponse
+	for row.Next() {
+		err = row.Scan(&usrDb.EmployeeId, &usrDb.LastName, &usrDb.FirstName,
+			&usrDb.MiddleName, &usrDb.Email, &usrDb.Password,
+			&usrDb.Passport, &usrDb.Inn, &usrDb.Snils, &usrDb.Birthday, &usrDb.Role)
+		if err != nil {
+			log.Fatalf("Unable to scan row: %v\n", err)
+		}
+	}
+	return &usrDb, nil
+}
+
 func (repo *UserRepository) EditUser(req dto.EditUserRequest) (*dto.EditUserResponse, error) {
-	q := "update users set lastname=$1, firstname=$2, middlename=$3, passport=$4, inn=$5, snils=$6 where user_id=$7"
+	q := "update users set lastname=$1, firstname=$2, middlename=$3, passport=$4, inn=$5, snils=$6 where user_id=$7 returning user_id, lastname, firstname, middlename, passport, inn, snils"
 	row, err := repo.db.Query(context.Background(), q, req.LastName, req.FirstName, req.MiddleName,
 		req.Passport, req.Inn, req.Snils, req.EmployeeId)
 	if err != nil && err.Error() != "no row in result set" {

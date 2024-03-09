@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 	"flag"
+	"github.com/RostislavOrlov/krp_admin/internal/db"
+	"github.com/RostislavOrlov/krp_admin/internal/handlers/user"
+	"github.com/RostislavOrlov/krp_admin/internal/repositories"
+	"github.com/RostislavOrlov/krp_admin/internal/services"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"krp_admin/internal/db"
-	"krp_admin/internal/handlers/user"
-	"krp_admin/internal/repositories"
-	"krp_admin/internal/services"
 	"os"
 	"os/signal"
 	"syscall"
@@ -23,8 +23,8 @@ func main() {
 	flag.Parse()
 
 	ctx := context.Background()
-	pgDB, err := db.NewPostgresPool("postgres://postgres:12345@localhost:5432/krp_auth")
-	//pgDB, err := db.NewPostgresPool("postgres://krp_auth:krp_auth@postgres_auth:5432/krp_auth")
+	//pgDB, err := db.NewPostgresPool("postgres://postgres:12345@localhost:5432/krp_auth")
+	pgDB, err := db.NewPostgresPool("postgres://krp_auth:krp_auth@postgres_auth:5432/krp_auth")
 	if err != nil {
 		logrus.Panicf("unable get postgres pool: %v", err)
 	}
