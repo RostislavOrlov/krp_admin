@@ -20,7 +20,7 @@ func (h *UserHandler) InitRoutes() {
 
 	h.engine.POST("/employees", middleware.CheckAuthHeaderMiddleware(),
 		middleware.CheckAccessTokenExpiresMiddleware(), h.AddUser)
-	h.engine.PATCH("/employees", middleware.CheckAuthHeaderMiddleware(),
+	h.engine.POST("/employees/change", middleware.CheckAuthHeaderMiddleware(),
 		middleware.CheckAccessTokenExpiresMiddleware(), h.EditUser)
 	h.engine.POST("/employees/delete", middleware.CheckAuthHeaderMiddleware(),
 		middleware.CheckAccessTokenExpiresMiddleware(), h.DeleteUser)
