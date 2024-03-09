@@ -117,9 +117,13 @@ func (h *UserHandler) EditUser(c *gin.Context) {
 		LastName:   resp.LastName,
 		FirstName:  resp.FirstName,
 		MiddleName: resp.MiddleName,
+		Email:      resp.Email,
+		Password:   resp.Password,
 		Passport:   resp.Passport,
 		Inn:        resp.Inn,
 		Snils:      resp.Snils,
+		Birthday:   resp.Birthday,
+		Role:       resp.Role,
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": respFinal})

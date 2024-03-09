@@ -43,9 +43,9 @@ func (repo *UserRepository) AddUser(req dto.AddUserRequest) (*dto.AddUserRespons
 }
 
 func (repo *UserRepository) EditUser(req dto.EditUserRequest) (*dto.EditUserResponse, error) {
-	q := "update users set lastname=$1, firstname=$2, middlename=$3, passport=$4, inn=$5, snils=$6 where user_id=$7 returning user_id, lastname, firstname, middlename, passport, inn, snils"
-	row, err := repo.db.Query(context.Background(), q, req.LastName, req.FirstName, req.MiddleName,
-		req.Passport, req.Inn, req.Snils, req.EmployeeId)
+	q := "update users set lastname=$1, firstname=$2, middlename=$3, email=$4, pswd=$5, passport=$6, inn=$7, snils=$8, birthday=$9, role=$10 where user_id=$11 returning *"
+	row, err := repo.db.Query(context.Background(), q, req.LastName, req.FirstName, req.MiddleName, req.Email, req.Password,
+		req.Passport, req.Inn, req.Snils, req.Birthday, req.Role, req.EmployeeId)
 	if err != nil && err.Error() != "no row in result set" {
 		return nil, errors.New("error edit user in table:" + err.Error())
 	}
@@ -54,7 +54,8 @@ func (repo *UserRepository) EditUser(req dto.EditUserRequest) (*dto.EditUserResp
 	var usrDb dto.EditUserResponse
 	for row.Next() {
 		err = row.Scan(&usrDb.EmployeeId, &usrDb.LastName, &usrDb.FirstName,
-			&usrDb.MiddleName, &usrDb.Passport, &usrDb.Inn, &usrDb.Snils)
+			&usrDb.MiddleName, &usrDb.Email, &usrDb.Password,
+			&usrDb.Passport, &usrDb.Inn, &usrDb.Snils, &usrDb.Birthday, &usrDb.Role)
 		if err != nil {
 			log.Fatalf("Unable to scan row: %v\n", err)
 		}
