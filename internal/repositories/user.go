@@ -6,6 +6,7 @@ import (
 	"github.com/RostislavOrlov/krp_admin/internal/dto"
 	"github.com/RostislavOrlov/krp_admin/internal/entities"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/sirupsen/logrus"
 	"log"
 )
 
@@ -43,6 +44,7 @@ func (repo *UserRepository) AddUser(req dto.AddUserRequest) (*dto.AddUserRespons
 }
 
 func (repo *UserRepository) EditUser(req dto.EditUserRequest) (*dto.EditUserResponse, error) {
+	logrus.Info("req EditUser из слоя репозитория: ", req)
 	q := "update users set lastname=$1, firstname=$2, middlename=$3, email=$4, pswd=$5, passport=$6, inn=$7, snils=$8, birthday=$9, role=$10 where user_id=$11 returning *"
 	row, err := repo.db.Query(context.Background(), q, req.LastName, req.FirstName, req.MiddleName, req.Email, req.Password,
 		req.Passport, req.Inn, req.Snils, req.Birthday, req.Role, req.EmployeeId)

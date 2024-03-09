@@ -28,9 +28,10 @@ func (h *UserHandler) InitRoutes() {
 		middleware.CheckAccessTokenExpiresMiddleware(), h.ListUsers)
 
 	h.engine.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"http://localhost:8081"},
-		AllowMethods: []string{"GET", "POST"},
-		AllowHeaders: []string{"Origin"},
+		AllowOrigins:     []string{"http://localhost:8081"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
+		AllowHeaders:     []string{"Access-Control-Allow-Headers", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "Accept", "Origin", "Cache-Control", "X-Requested-With"},
+		AllowCredentials: true,
 	}))
 }
 
@@ -101,7 +102,7 @@ func (h *UserHandler) AddUser(c *gin.Context) {
 
 func (h *UserHandler) EditUser(c *gin.Context) {
 	req, ok := request.GetRequest[dto.EditUserRequest](c)
-	logrus.Debug(req)
+	logrus.Debug("запрос на изменение: ", req)
 	if !ok {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "edit user request error", "text": ok})
 		return
@@ -131,7 +132,7 @@ func (h *UserHandler) EditUser(c *gin.Context) {
 
 func (h *UserHandler) DeleteUser(c *gin.Context) {
 	req, ok := request.GetRequest[dto.DeleteUserRequest](c)
-	logrus.Debug(req)
+	logrus.Debug("запрос на удаление: ", req)
 	if !ok {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "delete user request error", "text": ok})
 		return
