@@ -8,9 +8,9 @@ import (
 
 func GetRequest[T any](c *gin.Context) (T, bool) {
 	var request T
-	logrus.Info("запрос: ", request)
 
 	if err := c.BindJSON(&request); err != nil {
+		logrus.Info("запрос: ", request)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return request, false
 	}
