@@ -1,0 +1,47 @@
+services:
+  auth:
+    container_name: auth
+    build:
+      context: .
+      dockerfile: Dockerfile
+    links:
+      - postgres_auth
+    ports:
+      - 8090:8080
+    networks:
+      - auth
+
+  admin:
+    container_name: admin
+    build:
+      context: .
+      dockerfile: Dockerfile
+    links:
+      - postgres_auth
+    ports:
+      - 8091:8082
+    networks:
+      - auth
+
+  postgres_auth:
+    container_name: postgres_auth
+    build:
+      context: build/postgres
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+    volumes:
+      - "postgres_auth:/var/lib/postgresql/data"
+    ports:
+      - 5555:5432
+    networks:
+      - auth
+
+networks:
+  auth:
+    name: auth
+
+volumes:
+  postgres_auth:
