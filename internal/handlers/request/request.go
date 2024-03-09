@@ -17,6 +17,7 @@ func GetRequest[T any](c *gin.Context) (T, bool) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return request, false
 	}
+	logrus.Info("запрос: ", request)
 
 	return request, true
 }
