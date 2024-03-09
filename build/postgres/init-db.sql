@@ -12,4 +12,4 @@ create table users(
     role varchar
 );
 
-insert into users values ('adminov', 'admin', 'adminovich', 'admin@mail.ru', 'admin', '1234 567890', '12345678', '12345678', '2024-03-08', 'ADMIN');
+insert into users (lastname, firstname, middlename, email, pswd, passport, inn, snils, birthday, role) values ('adminov', 'admin', 'adminovich', 'admin@mail.ru', 'admin', '1234 567890', '12345678', '12345678', '2024-03-08', 'ADMIN');
